@@ -1,0 +1,12 @@
+{
+    "name": "pancake_plugin",
+    "dockerComposeFile": [
+        "../docker-compose.yml"
+    ],
+    "service": "pancake_plugin",
+    "workspaceFolder": "/app",
+    "shutdownAction": "stopCompose",
+	"extensions": [
+		"ms-python.python"
+	]
+}
