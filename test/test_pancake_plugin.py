@@ -117,7 +117,7 @@ class TestPancakePlugin(unittest.TestCase):
             caaj_transaction_swap.transaction_id
             == "0xae40de844d1c26be96db829ff0344e96ad38dc64d383b6e22d480c504b164ec0"
         )
-        assert caaj_transaction_swap.type == "send"
+        assert caaj_transaction_swap.type == "lose"
         assert caaj_transaction_swap.amount == "1"
         assert caaj_transaction_swap.token_symbol == "cake"
         assert (
@@ -146,7 +146,7 @@ class TestPancakePlugin(unittest.TestCase):
             caaj_transaction_swap.transaction_id
             == "0xae40de844d1c26be96db829ff0344e96ad38dc64d383b6e22d480c504b164ec0"
         )
-        assert caaj_transaction_swap.type == "receive"
+        assert caaj_transaction_swap.type == "get"
         assert caaj_transaction_swap.amount == "0.003189165151348716"
         assert caaj_transaction_swap.token_symbol == "eth"
         assert (
@@ -185,7 +185,7 @@ class TestPancakePlugin(unittest.TestCase):
             caaj_transaction_swap.transaction_id
             == "0xd3f63cdad3bb1b8ea46fafbaac21c93cdb7204daece60f1a44aaa198f58371fa"
         )
-        assert caaj_transaction_swap.type == "send"
+        assert caaj_transaction_swap.type == "lose"
         assert caaj_transaction_swap.amount == "21.5721707333114908"
         assert caaj_transaction_swap.token_symbol == "cake"
         assert (
@@ -214,7 +214,7 @@ class TestPancakePlugin(unittest.TestCase):
             caaj_transaction_swap.transaction_id
             == "0xd3f63cdad3bb1b8ea46fafbaac21c93cdb7204daece60f1a44aaa198f58371fa"
         )
-        assert caaj_transaction_swap.type == "receive"
+        assert caaj_transaction_swap.type == "get"
         assert caaj_transaction_swap.amount == "0.496512815787098187"
         assert caaj_transaction_swap.token_symbol == "bnb"
         assert (
@@ -253,7 +253,7 @@ class TestPancakePlugin(unittest.TestCase):
             caaj_transaction_swap.transaction_id
             == "0x4f8534e85849cb54f0ae4ca0718939ab22de248f64e2e4dc607a76b12f20f109"
         )
-        assert caaj_transaction_swap.type == "send"
+        assert caaj_transaction_swap.type == "lose"
         assert caaj_transaction_swap.amount == "0.5"
         assert caaj_transaction_swap.token_symbol == "bnb"
         assert (
@@ -282,7 +282,7 @@ class TestPancakePlugin(unittest.TestCase):
             caaj_transaction_swap.transaction_id
             == "0x4f8534e85849cb54f0ae4ca0718939ab22de248f64e2e4dc607a76b12f20f109"
         )
-        assert caaj_transaction_swap.type == "receive"
+        assert caaj_transaction_swap.type == "get"
         assert caaj_transaction_swap.amount == "21.562948714728883817"
         assert caaj_transaction_swap.token_symbol == "cake"
         assert (

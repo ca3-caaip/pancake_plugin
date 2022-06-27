@@ -173,7 +173,7 @@ class PancakePlugin(CaajPlugin):
                     cls.CHAIN,
                     transaction.get_transaction_id(),
                     trade_uuid,
-                    "send",
+                    "lose",
                     str(
                         Decimal(
                             int(
@@ -213,7 +213,7 @@ class PancakePlugin(CaajPlugin):
                     cls.CHAIN,
                     transaction.get_transaction_id(),
                     trade_uuid,
-                    "receive",
+                    "get",
                     str(Decimal(int(debit_log["data"], 16)) / Decimal(WEI)),
                     token_symbol,
                     token_original_id,
@@ -245,7 +245,7 @@ class PancakePlugin(CaajPlugin):
                     cls.CHAIN,
                     transaction.get_transaction_id(),
                     trade_uuid,
-                    "send",
+                    "lose",
                     str(Decimal(int(credit_log["data"], 16)) / Decimal(WEI)),
                     token_symbol,
                     token_original_id,
@@ -268,7 +268,7 @@ class PancakePlugin(CaajPlugin):
                     cls.CHAIN,
                     transaction.get_transaction_id(),
                     trade_uuid,
-                    "receive",
+                    "get",
                     str(
                         Decimal(
                             int(
@@ -308,7 +308,7 @@ class PancakePlugin(CaajPlugin):
                     cls.CHAIN,
                     transaction.get_transaction_id(),
                     trade_uuid,
-                    "send",
+                    "lose",
                     str(Decimal(int(credit_log["data"], 16)) / Decimal(WEI)),
                     token_symbol,
                     token_original_id,
@@ -336,7 +336,7 @@ class PancakePlugin(CaajPlugin):
                     cls.CHAIN,
                     transaction.get_transaction_id(),
                     trade_uuid,
-                    "receive",
+                    "get",
                     str(Decimal(int(debit_log["data"], 16)) / Decimal(WEI)),
                     token_symbol,
                     token_original_id,
