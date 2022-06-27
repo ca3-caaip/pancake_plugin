@@ -1,11 +1,10 @@
-version: '3.3'
+version: "3.3"
 
 services:
   pancake_plugin:
     container_name: pancake_plugin
     build: ./
     volumes:
-      - ./src:/app/src
-      - ./test:/app/test
+      - ./:/app/
     command: /bin/bash
     tty: true
