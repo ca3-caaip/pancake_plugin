@@ -1,7 +1,7 @@
 import argparse
 
 import pandas as pd
-from senkalib.chain.bsc.bsc_transaction_generator import BscTransactionGenerator
+from senkalib.platform.bsc.bsc_transaction_generator import BscTransactionGenerator
 from senkalib.senka_setting import SenkaSetting
 from senkalib.token_original_id_table import TokenOriginalIdTable
 
