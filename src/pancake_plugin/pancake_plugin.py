@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from senkalib.caaj_journal import CaajJournal
 from senkalib.caaj_plugin import CaajPlugin
-from senkalib.chain.bsc.bsc_transaction import BscTransaction
+from senkalib.platform.bsc.bsc_transaction import BscTransaction
 from senkalib.token_original_id_table import TokenOriginalIdTable
 
 # PancakeSwap: Router v2
@@ -52,8 +52,8 @@ WEI = 10**18
 
 
 class PancakePlugin(CaajPlugin):
-    CHAIN = "bsc"
-    PLATFORM = "pancakeswap"
+    platform = "bsc"
+    application = "pancakeswap"
 
     @classmethod
     def can_handle(cls, transaction) -> bool:
@@ -133,16 +133,14 @@ class PancakePlugin(CaajPlugin):
     def __get_caaj_fee(cls, transaction: BscTransaction, comment: str, trade_uuid: str):
         return CaajJournal(
             transaction.get_timestamp(),
-            cls.CHAIN,
-            cls.PLATFORM,
-            cls.CHAIN,
+            cls.platform,
+            cls.application,
+            cls.platform,
             transaction.get_transaction_id(),
             trade_uuid,
             "lose",
             str(Decimal(transaction.get_transaction_fee()) / Decimal(WEI)),
-            "bnb",
-            "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
-            "87dae675-c183-c452-fffa-ac519b71df01",
+            "bnb/bsc",
             transaction.transaction_receipt["from"],
             "0x0000000000000000000000000000000000000000",
             comment,
@@ -161,16 +159,14 @@ class PancakePlugin(CaajPlugin):
         if WETH_DEPOSIT_TOPIC in topics:
             credit_log_index = topics.index(WETH_DEPOSIT_TOPIC)
 
-            token_original_id = WBNB_CONTRACT_ADDRESS
-            token_symbol = token_table.get_symbol(cls.CHAIN, token_original_id)
-            symbol_uuid = token_table.get_symbol_uuid(cls.CHAIN, token_original_id)
+            uti = token_table.get_uti(cls.platform, WBNB_CONTRACT_ADDRESS)
 
             caajs.append(
                 CaajJournal(
                     transaction.get_timestamp(),
-                    cls.CHAIN,
-                    cls.PLATFORM,
-                    cls.CHAIN,
+                    cls.platform,
+                    cls.application,
+                    "swap",
                     transaction.get_transaction_id(),
                     trade_uuid,
                     "lose",
@@ -185,9 +181,7 @@ class PancakePlugin(CaajPlugin):
                         )
                         / Decimal(WEI)
                     ),
-                    token_symbol,
-                    token_original_id,
-                    symbol_uuid,
+                    uti,
                     caaj_common["credit_from"],
                     caaj_common["credit_to"],
                     "pancakeswap swap",
@@ -202,22 +196,18 @@ class PancakePlugin(CaajPlugin):
                 )
             )[-1]
 
-            token_original_id = debit_log["address"]
-            token_symbol = token_table.get_symbol(cls.CHAIN, token_original_id)
-            symbol_uuid = token_table.get_symbol_uuid(cls.CHAIN, token_original_id)
+            uti = token_table.get_uti(cls.platform, debit_log["address"])
             caajs.append(
                 CaajJournal(
                     transaction.get_timestamp(),
-                    cls.CHAIN,
-                    cls.PLATFORM,
-                    cls.CHAIN,
+                    cls.platform,
+                    cls.application,
+                    "swap",
                     transaction.get_transaction_id(),
                     trade_uuid,
                     "get",
                     str(Decimal(int(debit_log["data"], 16)) / Decimal(WEI)),
-                    token_symbol,
-                    token_original_id,
-                    symbol_uuid,
+                    uti,
                     caaj_common["debit_from"],
                     caaj_common["debit_to"],
                     "pancakeswap swap",
@@ -234,38 +224,31 @@ class PancakePlugin(CaajPlugin):
                 )
             )[0]
 
-            token_original_id = credit_log["address"]
-            token_symbol = token_table.get_symbol(cls.CHAIN, token_original_id)
-            symbol_uuid = token_table.get_symbol_uuid(cls.CHAIN, token_original_id)
+            uti = token_table.get_uti(cls.platform, credit_log["address"])
             caajs.append(
                 CaajJournal(
                     transaction.get_timestamp(),
-                    cls.CHAIN,
-                    cls.PLATFORM,
-                    cls.CHAIN,
+                    cls.platform,
+                    cls.application,
+                    "swap",
                     transaction.get_transaction_id(),
                     trade_uuid,
                     "lose",
                     str(Decimal(int(credit_log["data"], 16)) / Decimal(WEI)),
-                    token_symbol,
-                    token_original_id,
-                    symbol_uuid,
+                    uti,
                     caaj_common["credit_from"],
                     caaj_common["credit_to"],
                     "pancakeswap swap",
                 )
             )
 
-            token_original_id = WBNB_CONTRACT_ADDRESS
-            token_symbol = token_table.get_symbol(cls.CHAIN, token_original_id)
-            symbol_uuid = token_table.get_symbol_uuid(cls.CHAIN, token_original_id)
-
+            uti = token_table.get_uti(cls.platform, WBNB_CONTRACT_ADDRESS)
             caajs.append(
                 CaajJournal(
                     transaction.get_timestamp(),
-                    cls.CHAIN,
-                    cls.PLATFORM,
-                    cls.CHAIN,
+                    cls.platform,
+                    cls.application,
+                    "swap",
                     transaction.get_transaction_id(),
                     trade_uuid,
                     "get",
@@ -280,9 +263,7 @@ class PancakePlugin(CaajPlugin):
                         )
                         / Decimal(WEI)
                     ),
-                    token_symbol,
-                    token_original_id,
-                    symbol_uuid,
+                    uti,
                     caaj_common["debit_from"],
                     caaj_common["debit_to"],
                     "pancakeswap swap",
@@ -297,22 +278,18 @@ class PancakePlugin(CaajPlugin):
                     cls.__get_transfer_logs_from_transaction(transaction),
                 )
             )[0]
-            token_original_id = credit_log["address"]
-            token_symbol = token_table.get_symbol(cls.CHAIN, token_original_id)
-            symbol_uuid = token_table.get_symbol_uuid(cls.CHAIN, token_original_id)
+            uti = token_table.get_uti(cls.platform, credit_log["address"])
             caajs.append(
                 CaajJournal(
                     transaction.get_timestamp(),
-                    cls.CHAIN,
-                    cls.PLATFORM,
-                    cls.CHAIN,
+                    cls.platform,
+                    cls.application,
+                    "swap",
                     transaction.get_transaction_id(),
                     trade_uuid,
                     "lose",
                     str(Decimal(int(credit_log["data"], 16)) / Decimal(WEI)),
-                    token_symbol,
-                    token_original_id,
-                    symbol_uuid,
+                    uti,
                     caaj_common["credit_from"],
                     caaj_common["credit_to"],
                     "pancakeswap swap",
@@ -325,22 +302,18 @@ class PancakePlugin(CaajPlugin):
                     cls.__get_transfer_logs_from_transaction(transaction),
                 )
             )[-1]
-            token_original_id = debit_log["address"]
-            token_symbol = token_table.get_symbol(cls.CHAIN, token_original_id)
-            symbol_uuid = token_table.get_symbol_uuid(cls.CHAIN, token_original_id)
+            uti = token_table.get_uti(cls.platform, debit_log["address"])
             caajs.append(
                 CaajJournal(
                     transaction.get_timestamp(),
-                    cls.CHAIN,
-                    cls.PLATFORM,
-                    cls.CHAIN,
+                    cls.platform,
+                    cls.application,
+                    "swap",
                     transaction.get_transaction_id(),
                     trade_uuid,
                     "get",
                     str(Decimal(int(debit_log["data"], 16)) / Decimal(WEI)),
-                    token_symbol,
-                    token_original_id,
-                    symbol_uuid,
+                    uti,
                     caaj_common["debit_from"],
                     caaj_common["debit_to"],
                     "pancakeswap swap",

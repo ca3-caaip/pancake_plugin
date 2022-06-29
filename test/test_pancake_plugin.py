@@ -4,7 +4,7 @@ from typing import Optional
 from unittest.mock import MagicMock
 
 from hexbytes import HexBytes
-from senkalib.chain.bsc.bsc_transaction import BscTransaction
+from senkalib.platform.bsc.bsc_transaction import BscTransaction
 
 from pancake_plugin.pancake_plugin import PancakePlugin
 
@@ -31,28 +31,30 @@ class TestPancakePlugin(unittest.TestCase):
             else:
                 return None
 
-        def mock_get_symbol_uuid(chain: str, token_original_id: str) -> str:
+        def mock_get_uti(chain: str, token_original_id: str) -> str:
             if (
                 chain == "bsc"
                 and token_original_id == "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
             ):
-                return "87dae675-c183-c452-fffa-ac519b71df01"
+                return "bnb/bsc"
             elif (
                 chain == "bsc"
                 and token_original_id == "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
             ):
-                return "547faa5d-8c2b-8964-9053-2c26eb32cd18"
+                return "cake/bsc"
             elif (
                 chain == "bsc"
                 and token_original_id == "0x2170Ed0880ac9A755fd29B2688956BD959F933F8"
             ):
-                return "5408d890-493d-bbc9-57cd-cfd013fefdb8"
+                return "eth/ethereum"
             else:
-                return None
+                raise ValueError(
+                    f"unknown token_original_id is given: {token_original_id}"
+                )
 
         mock = MagicMock()
         mock.get_symbol.side_effect = mock_get_symbol
-        mock.get_symbol_uuid.side_effect = mock_get_symbol_uuid
+        mock.get_uti.side_effect = mock_get_uti
         return mock
 
     def test_can_handle(self):
@@ -72,24 +74,16 @@ class TestPancakePlugin(unittest.TestCase):
         )
         caaj_transaction_fee = caajs[2]
         assert caaj_transaction_fee.executed_at == "2021-12-28 01:28:52"
-        assert caaj_transaction_fee.chain == "bsc"
-        assert caaj_transaction_fee.platform == "pancakeswap"
-        assert caaj_transaction_fee.application == "bsc"
+        assert caaj_transaction_fee.platform == "bsc"
+        assert caaj_transaction_fee.application == "pancakeswap"
+        assert caaj_transaction_fee.service == "bsc"
         assert (
             caaj_transaction_fee.transaction_id
             == "0x4f8534e85849cb54f0ae4ca0718939ab22de248f64e2e4dc607a76b12f20f109"
         )
         assert caaj_transaction_fee.type == "lose"
         assert caaj_transaction_fee.amount == "0.00067182"
-        assert caaj_transaction_fee.token_symbol == "bnb"
-        assert (
-            caaj_transaction_fee.token_original_id
-            == "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
-        )
-        assert (
-            caaj_transaction_fee.token_symbol_uuid
-            == "87dae675-c183-c452-fffa-ac519b71df01"
-        )
+        assert caaj_transaction_fee.uti == "bnb/bsc"
         assert (
             caaj_transaction_fee.caaj_from
             == "0xDa28ecfc40181a6DAD8b52723035DFba3386d26E"
@@ -110,24 +104,16 @@ class TestPancakePlugin(unittest.TestCase):
         assert caajs[1].trade_uuid == caajs[2].trade_uuid
 
         caaj_transaction_swap = caajs[0]
-        assert caaj_transaction_swap.chain == "bsc"
-        assert caaj_transaction_swap.platform == "pancakeswap"
-        assert caaj_transaction_swap.application == "bsc"
+        assert caaj_transaction_swap.platform == "bsc"
+        assert caaj_transaction_swap.application == "pancakeswap"
+        assert caaj_transaction_swap.service == "swap"
         assert (
             caaj_transaction_swap.transaction_id
             == "0xae40de844d1c26be96db829ff0344e96ad38dc64d383b6e22d480c504b164ec0"
         )
         assert caaj_transaction_swap.type == "lose"
         assert caaj_transaction_swap.amount == "1"
-        assert caaj_transaction_swap.token_symbol == "cake"
-        assert (
-            caaj_transaction_swap.token_original_id
-            == "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
-        )
-        assert (
-            caaj_transaction_swap.token_symbol_uuid
-            == "547faa5d-8c2b-8964-9053-2c26eb32cd18"
-        )
+        assert caaj_transaction_swap.uti == "cake/bsc"
         assert (
             caaj_transaction_swap.caaj_from
             == "0xDa28ecfc40181a6DAD8b52723035DFba3386d26E"
@@ -139,24 +125,16 @@ class TestPancakePlugin(unittest.TestCase):
         assert caaj_transaction_swap.comment == "pancakeswap swap"
 
         caaj_transaction_swap = caajs[1]
-        assert caaj_transaction_swap.chain == "bsc"
-        assert caaj_transaction_swap.platform == "pancakeswap"
-        assert caaj_transaction_swap.application == "bsc"
+        assert caaj_transaction_swap.platform == "bsc"
+        assert caaj_transaction_swap.application == "pancakeswap"
+        assert caaj_transaction_swap.service == "swap"
         assert (
             caaj_transaction_swap.transaction_id
             == "0xae40de844d1c26be96db829ff0344e96ad38dc64d383b6e22d480c504b164ec0"
         )
         assert caaj_transaction_swap.type == "get"
         assert caaj_transaction_swap.amount == "0.003189165151348716"
-        assert caaj_transaction_swap.token_symbol == "eth"
-        assert (
-            caaj_transaction_swap.token_original_id
-            == "0x2170Ed0880ac9A755fd29B2688956BD959F933F8"
-        )
-        assert (
-            caaj_transaction_swap.token_symbol_uuid
-            == "5408d890-493d-bbc9-57cd-cfd013fefdb8"
-        )
+        assert caaj_transaction_swap.uti == "eth/ethereum"
         assert (
             caaj_transaction_swap.caaj_from
             == "0x10ED43C718714eb63d5aA57B78B54704E256024E"
@@ -178,24 +156,16 @@ class TestPancakePlugin(unittest.TestCase):
         assert caajs[1].trade_uuid == caajs[2].trade_uuid
 
         caaj_transaction_swap = caajs[0]
-        assert caaj_transaction_swap.chain == "bsc"
-        assert caaj_transaction_swap.platform == "pancakeswap"
-        assert caaj_transaction_swap.application == "bsc"
+        assert caaj_transaction_swap.platform == "bsc"
+        assert caaj_transaction_swap.application == "pancakeswap"
+        assert caaj_transaction_swap.service == "swap"
         assert (
             caaj_transaction_swap.transaction_id
             == "0xd3f63cdad3bb1b8ea46fafbaac21c93cdb7204daece60f1a44aaa198f58371fa"
         )
         assert caaj_transaction_swap.type == "lose"
         assert caaj_transaction_swap.amount == "21.5721707333114908"
-        assert caaj_transaction_swap.token_symbol == "cake"
-        assert (
-            caaj_transaction_swap.token_original_id
-            == "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
-        )
-        assert (
-            caaj_transaction_swap.token_symbol_uuid
-            == "547faa5d-8c2b-8964-9053-2c26eb32cd18"
-        )
+        assert caaj_transaction_swap.uti == "cake/bsc"
         assert (
             caaj_transaction_swap.caaj_from
             == "0xDa28ecfc40181a6DAD8b52723035DFba3386d26E"
@@ -207,24 +177,16 @@ class TestPancakePlugin(unittest.TestCase):
         assert caaj_transaction_swap.comment == "pancakeswap swap"
 
         caaj_transaction_swap = caajs[1]
-        assert caaj_transaction_swap.chain == "bsc"
-        assert caaj_transaction_swap.platform == "pancakeswap"
-        assert caaj_transaction_swap.application == "bsc"
+        assert caaj_transaction_swap.platform == "bsc"
+        assert caaj_transaction_swap.application == "pancakeswap"
+        assert caaj_transaction_swap.service == "swap"
         assert (
             caaj_transaction_swap.transaction_id
             == "0xd3f63cdad3bb1b8ea46fafbaac21c93cdb7204daece60f1a44aaa198f58371fa"
         )
         assert caaj_transaction_swap.type == "get"
         assert caaj_transaction_swap.amount == "0.496512815787098187"
-        assert caaj_transaction_swap.token_symbol == "bnb"
-        assert (
-            caaj_transaction_swap.token_original_id
-            == "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
-        )
-        assert (
-            caaj_transaction_swap.token_symbol_uuid
-            == "87dae675-c183-c452-fffa-ac519b71df01"
-        )
+        assert caaj_transaction_swap.uti == "bnb/bsc"
         assert (
             caaj_transaction_swap.caaj_from
             == "0x10ED43C718714eb63d5aA57B78B54704E256024E"
@@ -246,24 +208,16 @@ class TestPancakePlugin(unittest.TestCase):
         assert caajs[1].trade_uuid == caajs[2].trade_uuid
 
         caaj_transaction_swap = caajs[0]
-        assert caaj_transaction_swap.chain == "bsc"
-        assert caaj_transaction_swap.platform == "pancakeswap"
-        assert caaj_transaction_swap.application == "bsc"
+        assert caaj_transaction_swap.platform == "bsc"
+        assert caaj_transaction_swap.application == "pancakeswap"
+        assert caaj_transaction_swap.service == "swap"
         assert (
             caaj_transaction_swap.transaction_id
             == "0x4f8534e85849cb54f0ae4ca0718939ab22de248f64e2e4dc607a76b12f20f109"
         )
         assert caaj_transaction_swap.type == "lose"
         assert caaj_transaction_swap.amount == "0.5"
-        assert caaj_transaction_swap.token_symbol == "bnb"
-        assert (
-            caaj_transaction_swap.token_original_id
-            == "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
-        )
-        assert (
-            caaj_transaction_swap.token_symbol_uuid
-            == "87dae675-c183-c452-fffa-ac519b71df01"
-        )
+        assert caaj_transaction_swap.uti == "bnb/bsc"
         assert (
             caaj_transaction_swap.caaj_from
             == "0xDa28ecfc40181a6DAD8b52723035DFba3386d26E"
@@ -275,24 +229,16 @@ class TestPancakePlugin(unittest.TestCase):
         assert caaj_transaction_swap.comment == "pancakeswap swap"
 
         caaj_transaction_swap = caajs[1]
-        assert caaj_transaction_swap.chain == "bsc"
-        assert caaj_transaction_swap.platform == "pancakeswap"
-        assert caaj_transaction_swap.application == "bsc"
+        assert caaj_transaction_swap.platform == "bsc"
+        assert caaj_transaction_swap.application == "pancakeswap"
+        assert caaj_transaction_swap.service == "swap"
         assert (
             caaj_transaction_swap.transaction_id
             == "0x4f8534e85849cb54f0ae4ca0718939ab22de248f64e2e4dc607a76b12f20f109"
         )
         assert caaj_transaction_swap.type == "get"
         assert caaj_transaction_swap.amount == "21.562948714728883817"
-        assert caaj_transaction_swap.token_symbol == "cake"
-        assert (
-            caaj_transaction_swap.token_original_id
-            == "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
-        )
-        assert (
-            caaj_transaction_swap.token_symbol_uuid
-            == "547faa5d-8c2b-8964-9053-2c26eb32cd18"
-        )
+        assert caaj_transaction_swap.uti == "cake/bsc"
         assert (
             caaj_transaction_swap.caaj_from
             == "0x10ED43C718714eb63d5aA57B78B54704E256024E"

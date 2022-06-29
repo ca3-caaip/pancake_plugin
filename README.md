@@ -32,7 +32,7 @@ in the container
 
 ```
 $ cd /app
-$ curl -sSL https://install.python-poetry.org | python -
+$ curl -sSL https://install.python-poetry.org | python - --preview
 $ echo export PATH="$HOME/.local/bin:$PATH" >> ~/.bashrc
 $ source ~/.bashrc
 $ poetry config virtualenvs.in-project true && poetry install
